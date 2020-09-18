@@ -45,58 +45,40 @@ opt update checks
         Update->StateManager++: manage(state)
           StateManager->StateManager++: remove untracked SLAM states and cov
           StateManager<--StateManager--
-          StateManager->StateManager++: slide pose window state and cov
-          StateManager<--StateManager--
           StateManager->StateManager++: SLAM feature reparametrization
           StateManager<--StateManager--
-          StateManager->StateManager++: update state buffer
-          StateManager->MSF_Core: GetNextState()
-          MSF_Core->MSF_StateBuffer: GetClosestState()
-          MSF_Core<--MSF_StateBuffer: state and cov
-          StateManager<--MSF_Core--: next state and cov
+          StateManager->StateManager++: slide pose window state and cov
           StateManager<--StateManager--
         Update<--StateManager--:
         
         opt n_tracks > 0
           
-          Update->Update++: check track <-> pose state (Associate)
+          Update->Update++: construct SLAM update
           Update<--Update--
-
-          opt n_valid_tracks > 0
-
-            Update->Update++: construct SLAM update
+          Update->Update++: calculateAndApplyCorrection()
+          Update<--Update--
+      
+          loop for all new SLAM features
+            
+            Update->Update++: compute inverse depth
             Update<--Update--
-            Update->Update++: calculateAndApplyCorrection()
-            Update->MSF_Core++: applyCorrection()
-            MSF_Core->VIO++: correctCoreAfterCorrection()
-            MSF_Core<--VIO--
-            Update<--MSF_Core--
-            Update<--Update--
-        
-            loop for all new SLAM features
-              
-              Update->Update++: compute inverse depth
-              Update<--Update--
-              Update->Update++: calculateAndApplyCorrection()
-              Update->MSF_Core++: zero update
-              MSF_Core->VIO++: correctCoreAfterCorrection()
-              VIO->StateManager++: initFeature(state, cov)
-              VIO<--StateManager--: augmented state and cov
-              MSF_Core<--VIO--
-              Update<--MSF_Core--
-              Update<--Update--
-
-            end
+            
           end
+          
+          Update->StateManager++: initStandardSlamFeatures(state, cov)
+          Update<--StateManager--: augmented state and cov
 
         end
 
       MSF_Core<--Update--
 
       MSF_Core->MSF_Core++: repropagate
-      MSF_Core->MSF_StateBuffer++: get next states
-      MSF_Core<--MSF_StateBuffer--: states
-      MSF_Core->MSF_StateBuffer: repropagated states
+
+      loop until most recent state
+        MSF_Core->MSF_StateBuffer++: get next state
+        MSF_Core<--MSF_StateBuffer--: state ptr
+      end
+
       MSF_Core<--MSF_Core--
     end
     

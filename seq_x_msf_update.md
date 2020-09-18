@@ -38,17 +38,18 @@ opt update checks
       Measurement->Measurement++: custom update work
       Measurement<--Measurement--
       Measurement->Measurement++: calculateAndApplyCorrection()
-      Measurement->MSF_Core++: applyCorrection()
-      MSF_Core->MSF_SensorManager++: correctCoreAfterCorrection()
-      MSF_Core<--MSF_SensorManager--
-      Measurement<--MSF_Core--
+      Measurement->Measurement++: applyCorrection()
+      Measurement->Measurement++: correctCoreAfterCorrection()
+      Measurement<--Measurement--
+      Measurement<--Measurement--
       Measurement<--Measurement--
       MSF_Core<--Measurement--
 
       MSF_Core->MSF_Core++: repropagate
-      MSF_Core->MSF_StateBuffer++: get next states
-      MSF_Core<--MSF_StateBuffer--: states
-      MSF_Core->MSF_StateBuffer: repropagated states
+
+      loop until most recent state
+        MSF_Core->MSF_StateBuffer++: get next state
+        MSF_Core<--MSF_StateBuffer--: state ptr
       MSF_Core<--MSF_Core--
     end
     

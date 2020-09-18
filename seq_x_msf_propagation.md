@@ -5,17 +5,12 @@ title xMSF Propagation Sequence
 
 actor IMU
 participant MSF_SensorManager
-participant MSF_IMUHandler
 participant MSF_Core
-participant MSF_MeasurementBuffer
 participant MSF_StateBuffer
-participant MSF_MeasurementQueue
-participant Measurement
 actor Logger
 
 IMU->MSF_SensorManager++: processIMU()
-MSF_SensorManager->MSF_IMUHandler++: ProcessIMU()
-MSF_IMUHandler->MSF_Core++: ProcessIMU()
+MSF_SensorManager->MSF_Core++: ProcessIMU()
 
 opt initialized_
   
@@ -41,8 +36,7 @@ opt initialized_
 
 end
 
-MSF_IMUHandler<--MSF_Core--
-MSF_SensorManager<--MSF_IMUHandler--
+MSF_SensorManager<--MSF_Core--
 
 opt isInitialized()
   MSF_SensorManager->Logger: state and cov estimates
